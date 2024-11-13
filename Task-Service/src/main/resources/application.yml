@@ -1,0 +1,24 @@
+server:
+  port: 5002
+
+spring:
+  application:
+    name: TASK-SERVICE
+  datasource:
+    url: jdbc:postgresql://localhost:5432/task_task_service
+    username: postgres
+    password: Shubh@29
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+eureka:
+  instance:
+    hostname: localhost
+    preferIpAddress: false
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/
