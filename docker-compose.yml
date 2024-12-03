@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Assuming eureka-server has its own Dockerfile in the root folder
+    ports:
+      - "8070:8070"
+    environment:
+      - spring.datasource.url=jdbc:mysql://mysql:3306/eureka
+      - spring.datasource.username=root
+      - spring.datasource.password=Shubh@29
+    networks:
+      - task-network
+    depends_on:
+      - mysql
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Assuming api-gateway has its own Dockerfile in the root folder
+    ports:
+      - "5000:5000"
+    environment:
+      - SPRING_CLOUD_GATEWAY_ROUTES=[routes configuration]
+    networks:
+      - task-network
+    depends_on:
+      - eureka-server
+      - user-service
+      - task-service
+      - task-submission-service
+
+  user-service:
+    build:
+      context: ./user-service  # The build context is the user-service folder
+      dockerfile: Dockerfile   # Refers to the Dockerfile inside the user-service folder
+    ports:
+      - "5001:5001"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/task_user_service
+    networks:
+      - task-network
+    depends_on:
+      - mysql
+
+  task-service:
+    build:
+      context: ./task-service  # The build context is the task-service folder
+      dockerfile: Dockerfile   # Refers to the Dockerfile inside the task-service folder
+    ports:
+      - "5002:5002"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/task_task_service
+    networks:
+      - task-network
+    depends_on:
+      - postgres
+
+
+  task-submission-service:
+    build:
+      context: ./task-submission-service  # The build context is the task-submission-service folder
+      dockerfile: Dockerfile  # Refers to the Dockerfile inside the task-submission-service folder
+    ports:
+      - "5003:5003"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/task_submission_service
+    networks:
+      - task-network
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: Shubh@29
+      MYSQL_DATABASE: task_user_service
+    networks:
+      - task-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Shubh@29
+      POSTGRES_DB: task_task_service
+    networks:
+      - task-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  task-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  postgres_data:

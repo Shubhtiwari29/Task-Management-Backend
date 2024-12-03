@@ -1,0 +1,14 @@
+# Ignore Maven build files
+target/
+*.log
+*.jar
+*.class
+*.iml
+.git
+.gitignore
+.dockerignore
+Dockerfile
+*.yml
+.idea/
+*.swp
+*.DS_Store
